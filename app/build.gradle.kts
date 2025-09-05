@@ -5,18 +5,18 @@ plugins {
 
 android {
     namespace = "com.example.privacyshield"
-    compileSdk = 34   // keep stable; 36 is preview
+    compileSdk = 34   // stable; avoid preview SDKs
 
     defaultConfig {
         applicationId = "com.example.privacyshield"
-        minSdk = 24
+        minSdk = 26   // ✅ required for TensorFlow / MediaPipe
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // NDK filters (optional, keeps APK smaller)
+        // Keep APK size smaller by limiting ABIs
         ndk {
             abiFilters += listOf("armeabi-v7a", "arm64-v8a")
         }
@@ -47,6 +47,10 @@ android {
             assets.srcDirs("src/main/assets")
         }
     }
+
+    buildFeatures {
+        mlModelBinding = true
+    }
 }
 
 // Ensure Kotlin stdlib versions are aligned
@@ -66,12 +70,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
 
-    // MediaPipe Vision Tasks (Face Detection, Object Detection, etc.)
+    // MediaPipe Vision Tasks (Face/Object Detection, etc.)
     implementation("com.google.mediapipe:tasks-vision:0.20230731")
-    implementation("com.google.mediapipe:tasks-vision:0.20230727")
-    implementation("com.google.mlkit:face-detection:16.1.5")
 
-    // ML Kit Text Recognition (OCR)
+    // ML Kit Face + Text
+    implementation("com.google.mlkit:face-detection:16.1.5")
     implementation("com.google.mlkit:text-recognition:16.0.0")
 
     // AndroidX + Material
@@ -79,6 +82,13 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.activity:activity:1.7.2")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0")
+
+    // TensorFlow Lite
+    implementation("org.tensorflow:tensorflow-lite:2.15.0")
+    implementation("org.tensorflow:tensorflow-lite-select-tf-ops:2.15.0")
+    implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
+    implementation("org.tensorflow:tensorflow-lite-metadata:0.1.0-rc2")
+
 
     // Testing
     testImplementation("junit:junit:4.13.2")
